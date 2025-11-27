@@ -1,0 +1,134 @@
+name: CI
+
+on:
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main, develop]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+                  coverage: none
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            - name: Install Composer dependencies
+              run: composer install --no-interaction --prefer-dist
+
+            - name: Install npm dependencies
+              run: npm ci
+
+            - name: Run Pint
+              run: vendor/bin/pint --test
+
+            - name: Run Rector
+              run: vendor/bin/rector --dry-run
+
+            - name: Run ESLint
+              run: npm run lint --if-present
+
+    types:
+        name: Static Analysis
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+                  coverage: none
+
+            - name: Install Composer dependencies
+              run: composer install --no-interaction --prefer-dist
+
+            - name: Run PHPStan
+              run: vendor/bin/phpstan analyse --memory-limit=2G
+
+            - name: Run Type Coverage
+              run: vendor/bin/pest --type-coverage --min=100
+
+    test:
+        name: Tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+                  coverage: xdebug
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            - name: Install Composer dependencies
+              run: composer install --no-interaction --prefer-dist
+
+            - name: Install npm dependencies
+              run: npm ci
+
+            - name: Build assets
+              run: npm run build
+
+            - name: Prepare Laravel
+              run: |
+                  cp .env.example .env
+                  php artisan key:generate
+                  touch database/database.sqlite
+
+            - name: Run migrations
+              run: php artisan migrate --force
+
+            - name: Run Pest tests
+              run: vendor/bin/pest --parallel --coverage --min=100
+
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        needs: [lint, types, test]
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            - name: Install npm dependencies
+              run: npm ci
+
+            - name: Build production assets
+              run: npm run build
+
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: build
+                  path: public/build
+                  retention-days: 7

@@ -1,0 +1,57 @@
+import js from '@eslint/js';
+
+export default [
+    js.configs.recommended,
+    {
+        languageOptions: {
+            ecmaVersion: 2024,
+            sourceType: 'module',
+            globals: {
+                window: 'readonly',
+                document: 'readonly',
+                console: 'readonly',
+                module: 'readonly',
+                require: 'readonly',
+                process: 'readonly',
+                __dirname: 'readonly',
+                setTimeout: 'readonly',
+                clearTimeout: 'readonly',
+                setInterval: 'readonly',
+                clearInterval: 'readonly',
+                fetch: 'readonly',
+                URL: 'readonly',
+                URLSearchParams: 'readonly',
+                FormData: 'readonly',
+                Blob: 'readonly',
+                File: 'readonly',
+                FileReader: 'readonly',
+                Headers: 'readonly',
+                Request: 'readonly',
+                Response: 'readonly',
+                AbortController: 'readonly',
+                AbortSignal: 'readonly',
+                Event: 'readonly',
+                CustomEvent: 'readonly',
+                EventTarget: 'readonly',
+                Node: 'readonly',
+                Element: 'readonly',
+                HTMLElement: 'readonly',
+                MutationObserver: 'readonly',
+                ResizeObserver: 'readonly',
+                IntersectionObserver: 'readonly',
+            },
+        },
+        rules: {
+            'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+            'no-console': 'warn',
+            'prefer-const': 'error',
+            'no-var': 'error',
+            eqeqeq: ['error', 'always'],
+            curly: ['error', 'all'],
+        },
+    },
+    {
+        ignores: ['node_modules/**', 'vendor/**', 'public/build/**', 'storage/**'],
+    },
+];
+
