@@ -17,6 +17,6 @@ final class CategoryShowController extends Controller
     {
         $products = $category->products;
 
-        return view('categories.show', compact('category', 'products'));
+        return view('categories.show', ['category' => $category, 'products' => $products]);
     }
 }

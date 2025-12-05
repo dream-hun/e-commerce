@@ -15,13 +15,11 @@ test('product show controller displays product by slug', function (): void {
         'category_id' => $category->id,
     ]);
 
-    $response = $this->get("/products/{$product->slug}");
+    $response = $this->get('/products/' . $product->slug);
 
     $response->assertStatus(200);
     $response->assertViewIs('products.show');
-    $response->assertViewHas('product', function ($viewProduct) use ($product) {
-        return $viewProduct->id === $product->id;
-    });
+    $response->assertViewHas('product', fn($viewProduct): bool => $viewProduct->id === $product->id);
 });
 
 test('product show controller returns 404 for non-existent product', function (): void {
@@ -38,9 +36,10 @@ test('product show controller passes correct product to view', function (): void
         'category_id' => $category->id,
     ]);
 
-    $response = $this->get("/products/{$product->slug}");
+    $response = $this->get('/products/' . $product->slug);
 
     $response->assertViewHas('product');
+
     $viewProduct = $response->viewData('product');
     expect($viewProduct->name)->toBe('My Product');
     expect($viewProduct->slug)->toBe('my-product');
