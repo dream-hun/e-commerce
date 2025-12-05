@@ -13,9 +13,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
 </head>
-<body class="bg-gray-50 flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+<body class="bg-gray-50 flex min-h-screen flex-col">
     <x-header-component/>
-    <main>
+    <main class="flex-1 w-full">
         {{ $slot }}
     </main>
     <x-footer-component/>
