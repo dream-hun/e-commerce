@@ -1,6 +1,7 @@
-<footer class="tracking-wide bg-gradient-to-br from-black via-black to-green-700 px-8 sm:px-12 pt-16 pb-8">
+<footer class="tracking-wide bg-gradient-to-br from-black via-black to-green-700 w-full pt-16 pb-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid min-[1200px]:grid-cols-3 gap-12 xl:gap-16">
-        <div class="min-[1200px]:max-w-sm max-w-lg w-full">
+        <div class="w-full">
           <a href='javascript:void(0)'>
             <img src="https://readymadeui.com/readymadeui-light.svg" alt="logo" class="w-36" />
           </a>
@@ -141,4 +142,5 @@
 
         <p class="text-slate-400 text-sm md:ml-auto">© ReadymadeUI. All rights reserved.</p>
       </div>
-    </footer>
+    </div>
+</footer>
