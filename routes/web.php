@@ -2,12 +2,16 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\CategoryShowController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductShowController;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn (): Factory|View => view('welcome'));
-Route::get('/product-details', fn (): Factory|View => view('product'));
+Route::get('/', HomeController::class)->name('home');
+Route::get('/products/{product:slug}', ProductShowController::class)->name('products.show');
+Route::get('/categories/{category:slug}', CategoryShowController::class)->name('categories.show');
 Route::get('/shop', fn (): Factory|View => view('shop'));
 Route::get('/shopping-cart/checkout', fn (): Factory|View => view('checkout'));
 Route::get('/shop/shopping-cart', fn (): Factory|View => view('cart'));

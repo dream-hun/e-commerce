@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\CategoryStatus;
-use Database\Factories\CategoryFactory;
+use App\Enums\ProductStatus;
+use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-final class Category extends Model
+final class Product extends Model
 {
-    /** @use HasFactory<CategoryFactory> */
+    /** @use HasFactory<ProductFactory> */
     use HasFactory;
 
     protected $guarded = [];
@@ -20,12 +20,12 @@ final class Category extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'status' => CategoryStatus::class,
+        'status' => ProductStatus::class,
     ];
 
-    public function products(): HasMany
+    public function category(): BelongsTo
     {
-        return $this->hasMany(Product::class, 'category_id');
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
     public function getRouteKeyName(): string

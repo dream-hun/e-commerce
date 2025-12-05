@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\CategoryStatus;
+use App\Enums\ProductStatus;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends Factory<Category>
+ * @extends Factory<Product>
  */
-final class CategoryFactory extends Factory
+final class ProductFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -27,9 +28,11 @@ final class CategoryFactory extends Factory
             'uuid' => Str::uuid(),
             'name' => $name,
             'slug' => Str::slug($name),
-            'featured_image' => fake()->imageUrl(600, 600, 'cats', true, 'cats'),
+            'featured_image' => fake()->imageUrl(600, 600, 'products', true, 'products'),
             'description' => fake()->paragraph(),
-            'status' => CategoryStatus::Active->value,
+            'status' => ProductStatus::Active->value,
+            'category_id' => Category::query()->inRandomOrder()->first()->id,
+            'price' => fake()->numberBetween(10000, 100000),
             'created_at' => now(),
             'updated_at' => now(),
         ];
