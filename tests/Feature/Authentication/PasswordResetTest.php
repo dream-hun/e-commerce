@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Auth\PasswordBroker;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Contracts\Auth\PasswordBroker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
