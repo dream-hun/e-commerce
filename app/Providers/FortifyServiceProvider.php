@@ -1,0 +1,84 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Providers;
+
+use App\Actions\Fortify\CreateNewUser;
+use App\Actions\Fortify\ResetUserPassword;
+use App\Actions\Fortify\UpdateUserPassword;
+use App\Actions\Fortify\UpdateUserProfileInformation;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Laravel\Fortify\Features;
+use Laravel\Fortify\Fortify;
+
+final class FortifyServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        $this->configureActions();
+        $this->configureViews();
+        $this->configureRateLimiters();
+    }
+
+    public function configureActions(): void
+    {
+        Fortify::createUsersUsing(CreateNewUser::class);
+        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+        Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
+        Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
+    }
+
+    public function configureViews(): void
+    {
+        Fortify::loginView(fn (Request $request): Factory|View => view('auth.login', [
+            'canResetPassword' => Features::enabled(Features::resetPasswords()),
+            'canRegister' => Features::enabled(Features::registration()),
+            'status' => $request->session()->get('status'),
+        ]));
+        Fortify::resetPasswordView(fn (Request $request): Factory|View => view('auth.reset-password', [
+            'email' => $request->email,
+            'token' => $request->route('token'),
+        ]));
+        Fortify::requestPasswordResetLinkView(fn (Request $request): Factory|View => view('auth.forgot-password', [
+            'canResetPassword' => Features::enabled(Features::resetPasswords()),
+        ]));
+        Fortify::verifyEmailView(fn (Request $request): Factory|View => view('auth.verify-email', [
+            'status' => $request->session()->get('status'),
+        ]));
+        Fortify::registerView(fn (): Factory|View => view('auth.register'));
+        Fortify::twoFactorChallengeView(fn (): Factory|View => view('auth.two-factor-challenge'));
+
+        Fortify::confirmPasswordView(fn (): Factory|View => view('auth.confirm-password'));
+
+    }
+
+    public function configureRateLimiters(): void
+    {
+        RateLimiter::for('two-factor', fn (Request $request) => Limit::perMinute(5)->by($request->session()->get('login.id')));
+
+        RateLimiter::for('login', function (Request $request) {
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+
+            return Limit::perMinute(5)->by($throttleKey);
+        });
+
+    }
+}
