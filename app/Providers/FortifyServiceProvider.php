@@ -6,6 +6,8 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Actions\Fortify\UpdateUserPassword;
+use App\Actions\Fortify\UpdateUserProfileInformation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -36,8 +38,10 @@ final class FortifyServiceProvider extends ServiceProvider
 
     public function configureActions(): void
     {
-        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
+        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+        Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
+        Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
     }
 
     public function configureViews(): void
