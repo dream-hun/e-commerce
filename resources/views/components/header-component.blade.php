@@ -218,12 +218,27 @@
           </div>
 
           <div class="space-y-6 border-t border-gray-200 px-4 py-6">
-            <div class="flow-root">
-              <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Sign in</a>
-            </div>
-            <div class="flow-root">
-              <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Create account</a>
-            </div>
+            @auth
+              <div class="flow-root">
+                <a href="{{ route('dashboard') }}" class="-m-2 block p-2 font-medium text-gray-900">Dashboard</a>
+              </div>
+              <div class="flow-root">
+                <a href="{{ route('account.orders.index') }}" class="-m-2 block p-2 font-medium text-gray-900">My Orders</a>
+              </div>
+              <div class="flow-root">
+                <form method="POST" action="/logout">
+                  @csrf
+                  <button type="submit" class="-m-2 block p-2 font-medium text-gray-900 w-full text-left">Log Out</button>
+                </form>
+              </div>
+            @else
+              <div class="flow-root">
+                <a href="{{ route('login') }}" class="-m-2 block p-2 font-medium text-gray-900">Sign in</a>
+              </div>
+              <div class="flow-root">
+                <a href="{{ route('register') }}" class="-m-2 block p-2 font-medium text-gray-900">Create account</a>
+              </div>
+            @endauth
           </div>
 
           <div class="border-t border-gray-200 px-4 py-6">
@@ -487,11 +502,42 @@
           </el-popover-group>
 
           <div class="ml-auto flex items-center">
-            <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-              <a href="#" class="text-sm font-medium text-gray-700 hover:text-gray-800">Sign in</a>
-              <span aria-hidden="true" class="h-6 w-px bg-gray-200"></span>
-              <a href="#" class="text-sm font-medium text-gray-700 hover:text-gray-800">Create account</a>
-            </div>
+            @auth
+              <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
+                <x-dropdown align="right" width="48">
+                  <x-slot name="trigger">
+                    <button type="button" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800 focus:outline-none transition">
+                      <span>{{ Auth::user()->name }}</span>
+                      <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </x-slot>
+
+                  <x-slot name="content">
+                    <x-dropdown-link href="{{ route('dashboard') }}">
+                      Dashboard
+                    </x-dropdown-link>
+                    <x-dropdown-link href="{{ route('account.orders.index') }}">
+                      My Orders
+                    </x-dropdown-link>
+                    <hr class="my-1 border-gray-200" />
+                    <form method="POST" action="/logout">
+                      @csrf
+                      <x-dropdown-link href="/logout" onclick="event.preventDefault(); this.closest('form').submit();">
+                        Log Out
+                      </x-dropdown-link>
+                    </form>
+                  </x-slot>
+                </x-dropdown>
+              </div>
+            @else
+              <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
+                <a href="{{ route('login') }}" class="text-sm font-medium text-gray-700 hover:text-gray-800">Sign in</a>
+                <span aria-hidden="true" class="h-6 w-px bg-gray-200"></span>
+                <a href="{{ route('register') }}" class="text-sm font-medium text-gray-700 hover:text-gray-800">Create account</a>
+              </div>
+            @endauth
 
             <div class="hidden lg:ml-8 lg:flex">
               <a href="#" class="flex items-center text-gray-700 hover:text-gray-800">
