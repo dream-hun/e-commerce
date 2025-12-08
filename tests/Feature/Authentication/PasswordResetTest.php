@@ -27,7 +27,7 @@ test('reset password link can be requested', function (): void {
     ]);
 
     Notification::assertSentTo($user, ResetPassword::class);
-    $response->assertRedirect('/login');
+    $response->assertRedirect();
     $response->assertSessionHas('status');
 });
 

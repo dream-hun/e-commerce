@@ -33,7 +33,7 @@ test('profile information cannot be updated with invalid email', function (): vo
         'email' => 'invalid-email',
     ]);
 
-    $response->assertSessionHasErrors(['email']);
+    $response->assertSessionHasErrorsIn('updateProfileInformation', ['email']);
 });
 
 test('profile information cannot be updated without name', function (): void {
@@ -44,7 +44,7 @@ test('profile information cannot be updated without name', function (): void {
         'email' => 'new@example.com',
     ]);
 
-    $response->assertSessionHasErrors(['name']);
+    $response->assertSessionHasErrorsIn('updateProfileInformation', ['name']);
 });
 
 test('profile information cannot be updated with duplicate email', function (): void {
@@ -56,7 +56,7 @@ test('profile information cannot be updated with duplicate email', function (): 
         'email' => 'existing@example.com',
     ]);
 
-    $response->assertSessionHasErrors(['email']);
+    $response->assertSessionHasErrorsIn('updateProfileInformation', ['email']);
 });
 
 test('profile information can be updated with same email', function (): void {
