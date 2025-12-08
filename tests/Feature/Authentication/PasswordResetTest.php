@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Contracts\Auth\PasswordBroker;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -44,7 +45,7 @@ test('reset password link cannot be requested with invalid email', function (): 
 
 test('reset password screen can be rendered', function (): void {
     $user = User::factory()->create();
-    $token = app('auth.password.broker')->createToken($user);
+    $token = resolve(PasswordBroker::class)->createToken($user);
 
     $response = $this->get('/reset-password/'.$token, [
         'email' => $user->email,
@@ -58,7 +59,7 @@ test('password can be reset with valid token', function (): void {
     Notification::fake();
 
     $user = User::factory()->create();
-    $token = app('auth.password.broker')->createToken($user);
+    $token = resolve(PasswordBroker::class)->createToken($user);
 
     $response = $this->post('/reset-password', [
         'token' => $token,
@@ -88,7 +89,7 @@ test('password cannot be reset with invalid token', function (): void {
 
 test('password cannot be reset with mismatched passwords', function (): void {
     $user = User::factory()->create();
-    $token = app('auth.password.broker')->createToken($user);
+    $token = resolve(PasswordBroker::class)->createToken($user);
 
     $response = $this->post('/reset-password', [
         'token' => $token,
@@ -102,7 +103,7 @@ test('password cannot be reset with mismatched passwords', function (): void {
 
 test('password cannot be reset with weak password', function (): void {
     $user = User::factory()->create();
-    $token = app('auth.password.broker')->createToken($user);
+    $token = resolve(PasswordBroker::class)->createToken($user);
 
     $response = $this->post('/reset-password', [
         'token' => $token,

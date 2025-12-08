@@ -42,6 +42,6 @@ final class PasswordController extends Controller
         // Regenerate the session ID to prevent session fixation attacks
         $request->session()->regenerate();
 
-        return redirect()->route('settings.password.edit')->with('success', __('Password updated successfully.'));
+        return to_route('settings.password.edit')->with('success', __('Password updated successfully.'));
     }
 }

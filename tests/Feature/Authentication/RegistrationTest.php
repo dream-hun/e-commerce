@@ -26,7 +26,7 @@ test('new users can register', function (): void {
     $response->assertRedirect('/dashboard');
     $this->assertAuthenticated();
 
-    $user = User::where('email', 'test@example.com')->first();
+    $user = User::query()->where('email', 'test@example.com')->first();
     expect($user)->not->toBeNull();
     expect($user->name)->toBe('Test User');
     expect(Hash::check('password', $user->password))->toBeTrue();

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
@@ -46,33 +48,31 @@ final class FortifyServiceProvider extends ServiceProvider
 
     public function configureViews(): void
     {
-        Fortify::loginView(fn (Request $request) => view('auth.login', [
+        Fortify::loginView(fn (Request $request): Factory|View => view('auth.login', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'canRegister' => Features::enabled(Features::registration()),
             'status' => $request->session()->get('status'),
         ]));
-        Fortify::resetPasswordView(fn (Request $request) => view('auth.reset-password', [
+        Fortify::resetPasswordView(fn (Request $request): Factory|View => view('auth.reset-password', [
             'email' => $request->email,
             'token' => $request->route('token'),
         ]));
-        Fortify::requestPasswordResetLinkView(fn (Request $request) => view('auth.forgot-password', [
+        Fortify::requestPasswordResetLinkView(fn (Request $request): Factory|View => view('auth.forgot-password', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
         ]));
-        Fortify::verifyEmailView(fn (Request $request) => view('auth.verify-email', [
+        Fortify::verifyEmailView(fn (Request $request): Factory|View => view('auth.verify-email', [
             'status' => $request->session()->get('status'),
         ]));
-        Fortify::registerView(fn () => view('auth.register'));
-        Fortify::twoFactorChallengeView(fn () => view('auth.two-factor-challenge'));
+        Fortify::registerView(fn (): Factory|View => view('auth.register'));
+        Fortify::twoFactorChallengeView(fn (): Factory|View => view('auth.two-factor-challenge'));
 
-        Fortify::confirmPasswordView(fn () => view('auth.confirm-password'));
+        Fortify::confirmPasswordView(fn (): Factory|View => view('auth.confirm-password'));
 
     }
 
     public function configureRateLimiters(): void
     {
-        RateLimiter::for('two-factor', function (Request $request) {
-            return Limit::perMinute(5)->by($request->session()->get('login.id'));
-        });
+        RateLimiter::for('two-factor', fn(Request $request) => Limit::perMinute(5)->by($request->session()->get('login.id')));
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
